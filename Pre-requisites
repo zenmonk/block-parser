@@ -1,0 +1,3 @@
+apt install python3-evtx python3-lxml
+pip3 install lxml
+pip3 install evtx
