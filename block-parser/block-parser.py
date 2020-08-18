@@ -37,8 +37,8 @@ def to_lxml(record_xml):
           record_xml.replace("xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"", ""))
     except:
         return etree.fromstring("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>%s" %
-          record_xml.replace("xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"", "").encode('utf-8')) 
-            
+          record_xml.replace("xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"", "").encode('utf-8'))
+
 class ScriptBlockEntry(object):
     def __init__(self, level, computer, timestamp, message_number, message_total, script_block_id, script_block_text):
         super(ScriptBlockEntry, self).__init__()
@@ -49,9 +49,9 @@ class ScriptBlockEntry(object):
         self.message_total = message_total
         self.script_block_id = script_block_id
         self.script_block_text = script_block_text
-    
+
     def get_metadata(self):
-        return self.script_block_id + "," + str(self.timestamp) + "," + str(self.level) + "," + str(self.message_total) + "," + self.computer + "," + str(self.message_number) 
+        return self.script_block_id + "," + str(self.timestamp) + "," + str(self.level) + "," + str(self.message_total) + "," + self.computer + "," + str(self.message_number)
 
 class Entry(object):
     def __init__(self, xml, record):
@@ -59,13 +59,13 @@ class Entry(object):
         self._xml = xml
         self._record = record
         self._node = to_lxml(self._xml)
-        
+
     def get_xpath(self, path):
         return self._node.xpath(path)[0]
 
     def get_eid(self):
         return int(self.get_xpath("/Event/System/EventID").text)
-            
+
     def get_script_block_entry(self):
         level = int(self.get_xpath("/Event/System/Level").text)
         computer = self.get_xpath("/Event/System/Computer").text
@@ -75,7 +75,7 @@ class Entry(object):
         script_block_id = self.get_xpath("/Event/EventData/Data[@Name='ScriptBlockId']").text
         script_block_text = self.get_xpath("/Event/EventData/Data[@Name='ScriptBlockText']").text
         return ScriptBlockEntry(level, computer, timestamp, message_number, message_total, script_block_id, script_block_text)
-        
+
 def get_entries(evtx):
     """
     @rtype: generator of Entry
@@ -109,9 +109,9 @@ def process_entries(entries, s, a, o, f, m):
         sbe = entry.get_script_block_entry()
         if s == sbe.script_block_id or ((a or sbe.message_total > 1) and s == None):
             blocks[sbe.script_block_id].insert(sbe.message_number, sbe.script_block_text.replace("&lt;",">").replace("&gt;","<"))
-            if not metadata.has_key(sbe.script_block_id):
+            if sbe.script_block_id not in metadata:
                 metadata[sbe.script_block_id] = sbe
-    
+
     output_result(blocks, metadata, o, f, m)
 
 def output_result(blocks, metadata, o, f, m):
@@ -123,7 +123,7 @@ def output_result(blocks, metadata, o, f, m):
             if not os.path.isdir(os.path.abspath(os.path.dirname(f))):
                 os.makedirs(os.path.dirname(f))
             fw = open(f, "w")
-            k = blocks.keys()
+            k = list(blocks.keys())
             for n in k:
                 if metadata[n].message_number > 1:
                     x = " -partial"
@@ -135,7 +135,7 @@ def output_result(blocks, metadata, o, f, m):
         elif o:
             if not os.path.isdir(o):
                 os.makedirs(o)
-            k = blocks.keys()
+            k = list(blocks.keys())
             for n in k:
                 if metadata[n].message_number > 1:
                     x = "-partial"
@@ -150,13 +150,13 @@ def output_result(blocks, metadata, o, f, m):
                 os.makedirs(os.path.dirname(m))
             fw = open(m, "w")
             fw.write(header)
-            k = blocks.keys()
+            k = list(blocks.keys())
             for n in k:
                 fw.write("\n" + metadata[n].get_metadata())
             fw.close()
-            
+
     else:
-        print "No blocks found"
+        print("No blocks found")
 
 def main():
     import argparse
