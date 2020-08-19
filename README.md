@@ -19,19 +19,19 @@ example usage
 
 Parse all multi-part script blocks from a log to separate files:
 
-  > python block-parser.py -o C:\path C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
+  > python block-parser.py -o C:\path evtx C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
   
 Parse ALL script blocks to a single output file:
   
-  > python block-parser.py -a -f C:\path\file.txt C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
+  > python block-parser.py -a -f evtx C:\path\file.txt C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
   
 Parse metadata for ALL script blocks:
 
- > python block-parser.py -a -m C:\path\metadata.csv C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
+ > python block-parser.py -a -m evtx C:\path\metadata.csv C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
  
 Parse a specified script block with metadata:
 
-> python block-parser.py -o C:\path -s 00000000-0000-0000-0000-000000000000 -m C:\path\metadata.csv C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
+> python block-parser.py -o C:\path -s 00000000-0000-0000-0000-000000000000 -m evtx C:\path\metadata.csv C:\data\Microsoft-Windows-PowerShell%4Operational.evtx
 
 Each command supports:
 
